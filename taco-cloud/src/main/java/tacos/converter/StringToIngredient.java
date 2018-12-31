@@ -20,7 +20,7 @@ public class StringToIngredient implements Converter<String, Ingredient> {
 	@Override
 	public Ingredient convert(String id) {
 		// TODO Auto-generated method stub
-		return ingredientRepo.findOne(id);
+		return ingredientRepo.findById(id).get();
 	}
 
 }
