@@ -1,34 +1,23 @@
 package tacos.controller;
 
-import java.security.Principal;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
 import tacos.model.Order;
-import tacos.model.User;
 import tacos.props.OrderProps;
 import tacos.repository.OrderRepository;
-import tacos.repository.UserRepository;
 
-@Slf4j
-@Controller
-@RequestMapping("/orders")
-@SessionAttributes("order")
+@RestController
+@RequestMapping(path = "/orders", consumes = "application/json")
 public class OrderController {
 
 	private OrderProps orderProps;
@@ -42,40 +31,49 @@ public class OrderController {
 
 	}
 
-	@GetMapping("current")
-	public String orderForm() {
-		return "orderForm";
+	// @PutMapping is update resoruce -> 'REPLACEMENT'
+	@PutMapping("/{orderId}")
+	public Order putOrder(@RequestBody Order order) {
+		return this.orderRepo.save(order);
 	}
 
-	@PostMapping
-	public String processOrder(@Valid Order order, Errors errors, SessionStatus sessionStatus,
-			@AuthenticationPrincipal User user) {
-
-		if (errors.hasErrors()) {
-			return "orderForm";
+	// @PatchMapping is also updating resource -> 'partical update'
+	@PatchMapping(path = "/{orderId}", consumes = "application/json")
+	public Order patchOrder(@PathVariable("orderId") Long orderId, @RequestBody Order patch) {
+		Order order = this.orderRepo.findById(orderId).get();
+		if (patch.getDeliveryName() != null) {
+			order.setDeliveryName(patch.getDeliveryName());
 		}
-
-		// way1 - inject Principal priciple
-		// userRepo.findByUsername(rpinciple.getName());
-		// way2 - inject Authentication auth
-		// User user = (User) authentication.getPrincipal();
-		// way3 -- @AuthenticationPrincipal User user)
-		// way4 --
-		// Authentication authentication =
-		// SecurityContextHolder.getContext().getAuthentication();
-		// User user = (User) authentication.getPrincipal();
-		order.setUser(user);
-		this.orderRepo.save(order);
-
-		sessionStatus.setComplete();
-		log.info("Order submitted:" + order);
-		return "redirect:/";
+		if (patch.getDeliveryStreet() != null) {
+			order.setDeliveryStreet(patch.getDeliveryStreet());
+		}
+		if (patch.getDeliveryCity() != null) {
+			order.setDeliveryCity(patch.getDeliveryCity());
+		}
+		if (patch.getDeliveryState() != null) {
+			order.setDeliveryState(patch.getDeliveryState());
+		}
+		if (patch.getDeliveryZip() != null) {
+			order.setDeliveryZip(patch.getDeliveryState());
+		}
+		if (patch.getCcNumber() != null) {
+			order.setCcNumber(patch.getCcNumber());
+		}
+		if (patch.getCcExpiration() != null) {
+			order.setCcExpiration(patch.getCcExpiration());
+		}
+		if (patch.getCcCVV() != null) {
+			order.setCcCVV(patch.getCcCVV());
+		}
+		return this.orderRepo.save(order);
 	}
 
-	@GetMapping
-	public String ordersForUser(@AuthenticationPrincipal User user, Model model) {
-		Pageable pageable = PageRequest.of(0, this.orderProps.getPageSize());
-		model.addAttribute("orders", this.orderRepo.findByUserOrderByPlacedAt(user, pageable));
-		return "orderList";
+	@DeleteMapping("/{orderId}")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	public void deleteOrder(@PathVariable("orderId") Long orderId) {
+		try {
+			this.orderRepo.deleteById(orderId);
+		} catch (EmptyResultDataAccessException e) {
+		}
 	}
 }

@@ -1,90 +1,55 @@
 package tacos.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
-import tacos.model.Ingredient;
-import tacos.model.Ingredient.Type;
-import tacos.model.Order;
 import tacos.model.Taco;
-import tacos.repository.IngredientRepository;
 import tacos.repository.TacoRepository;;
 
-@Controller
-@RequestMapping("/design")
-@Slf4j
-@SessionAttributes("order")
+@RestController
+@RequestMapping(path = "/design", produces = "application/json")
+@CrossOrigin(origins = "*")
 public class DesignTacoController {
 
-	private final IngredientRepository ingredientRepo;
 	private final TacoRepository tacoRepo;
 
 	@Autowired
-	public DesignTacoController(IngredientRepository ingredientRepo, TacoRepository tacoRepo) {
-		this.ingredientRepo = ingredientRepo;
+	public DesignTacoController(TacoRepository tacoRepo) {
 		this.tacoRepo = tacoRepo;
 	}
 
-	@ModelAttribute
-	public void addIngredientsToMode(Model model) {
-		List<Ingredient> ingredients = new ArrayList<Ingredient>();
-		ingredientRepo.findAll().forEach(ingredient -> ingredients.add(ingredient));
-		Type[] types = Ingredient.Type.values();
-		for (Type type : types) {
-			model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
+	@GetMapping("/recent")
+	public Iterable<Taco> recentTacos() {
+		PageRequest page = PageRequest.of(0, 12, Sort.by("createdAt").descending());
+		return tacoRepo.findAll(page).getContent();
+
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Taco> tacoById(@PathVariable("id") Long id) {
+		Optional<Taco> optTa = tacoRepo.findById(id);
+		if (optTa.isPresent()) {
+			return new ResponseEntity<>(optTa.get(), HttpStatus.OK);
 		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
-
-	@ModelAttribute(name = "order")
-	public Order order() {
-		return new Order();
-	}
-
-	@ModelAttribute(name = "taco")
-	public Taco taco() {
-		return new Taco();
-	}
-
-	@GetMapping
-	public String showDesignForm(Model model) {
-		return "design";
-	}
-
-	// This @ModalAttribute Order -- indicate that its value should come from
-	// model and that Spring MVC shouldn't attemp to bind request parameters to
-	// it
-	@PostMapping
-	public String processDesign(@Valid Taco design, Errors errors, @ModelAttribute Order order) {
-
-		if (errors.hasErrors()) {
-			log.info("errors" + errors);
-			return "design";
-		}
-
-		log.info("Processing design:" + design);
-		Taco saved = tacoRepo.save(design);
-		order.addDesign(saved);
-		return "redirect:/orders/current";
-	}
-
-	private List<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
-		// TODO Auto-generated method stub
-		return ingredients.stream().filter(ingredient -> ingredient.getType().equals(type))
-				.collect(Collectors.toList());
-
+	
+	@PostMapping(consumes="application/json")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Taco postTaco(@RequestBody Taco taco){
+		return tacoRepo.save(taco);
 	}
 }
