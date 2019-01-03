@@ -5,6 +5,9 @@ import java.security.Principal;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import lombok.extern.slf4j.Slf4j;
 import tacos.model.Order;
 import tacos.model.User;
+import tacos.props.OrderProps;
 import tacos.repository.OrderRepository;
 import tacos.repository.UserRepository;
 
@@ -27,11 +31,14 @@ import tacos.repository.UserRepository;
 @SessionAttributes("order")
 public class OrderController {
 
+	private OrderProps orderProps;
+
 	private OrderRepository orderRepo;
 
 	@Autowired
-	public OrderController(OrderRepository orderRepo) {
+	public OrderController(OrderRepository orderRepo, OrderProps orderProps) {
 		this.orderRepo = orderRepo;
+		this.orderProps = orderProps;
 
 	}
 
@@ -63,5 +70,12 @@ public class OrderController {
 		sessionStatus.setComplete();
 		log.info("Order submitted:" + order);
 		return "redirect:/";
+	}
+
+	@GetMapping
+	public String ordersForUser(@AuthenticationPrincipal User user, Model model) {
+		Pageable pageable = PageRequest.of(0, this.orderProps.getPageSize());
+		model.addAttribute("orders", this.orderRepo.findByUserOrderByPlacedAt(user, pageable));
+		return "orderList";
 	}
 }
