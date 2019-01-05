@@ -4,10 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TacoCloudApplication {
+public class TacoCloudDomainApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TacoCloudApplication.class, args);
+		SpringApplication.run(TacoCloudDomainApplication.class, args);
 	}
 
 }
+

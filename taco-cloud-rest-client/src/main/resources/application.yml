@@ -1,0 +1,9 @@
+server: 
+  port: 9091
+  
+logging: 
+  level: 
+    org.springframework: TRACE
+spring: 
+  main: 
+    web-application-type: none 

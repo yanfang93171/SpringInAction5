@@ -1,24 +1,25 @@
 package tacos.config;
 
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import tacos.model.Ingredient;
 import tacos.model.Ingredient.Type;
-import tacos.model.User;
+import tacos.model.Taco;
 import tacos.repository.IngredientRepository;
-import tacos.repository.UserRepository;
+import tacos.repository.TacoRepository;
 
 @Profile("!prod")
 @Configuration
 public class DevelopmentConfig {
 
 	@Bean
-	public CommandLineRunner CommandLineRunner(IngredientRepository repo, UserRepository userRepo,
-			PasswordEncoder encoder) {
+	public CommandLineRunner CommandLineRunner(IngredientRepository repo, TacoRepository tacoRepo) {
 		return new CommandLineRunner() {
 
 			@Override
@@ -35,8 +36,12 @@ public class DevelopmentConfig {
 				repo.save(new Ingredient("SLSA", "Salsa", Type.SAUCE));
 				repo.save(new Ingredient("SRCR", "Sour Cream", Type.SAUCE));
 
-				userRepo.save(new User("habuma", encoder.encode("password"), "Craig Walls", "123 North Street",
-						"Cross Roads", "TX", "76227", "123-123-1234"));
+				Taco taco = new Taco();
+				taco.setName("taco1");
+				taco.setIngredients(
+						StreamSupport.stream(repo.findAll().spliterator(), false).collect(Collectors.toList()));
+				tacoRepo.save(taco);
+
 			}
 
 		};

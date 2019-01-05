@@ -5,8 +5,8 @@ logging:
   level:
     root: WARN
     org:
-      springframework: 
-        security: DEBUG
+      springframework: TRACE
+        
         
 
 #To See H2 Console in Browser
@@ -42,7 +42,8 @@ server:
 taco: 
   orders:
     pageSize: 1
-    
+
+          
 ---
 spring: 
   profiles: prod
