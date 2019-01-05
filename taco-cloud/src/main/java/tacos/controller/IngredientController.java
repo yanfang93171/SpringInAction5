@@ -23,6 +23,6 @@ public class IngredientController {
 
 	@GetMapping
 	public Iterable<Ingredient> allIngredients() {
-		return this.repo.findAll();
+		return repo.findAll();
 	}
 }
