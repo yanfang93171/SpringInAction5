@@ -16,7 +16,12 @@ spring:
   h2:
     console:
       enabled: true
-  
+
+##spring-data-rest base path
+  data: 
+    rest: 
+      base-path: /api 
+        
 ##DB2  
   datasource: 
     url: jdbc:h2:mem:testdb;MODE=Oracle;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
@@ -43,7 +48,6 @@ taco:
   orders:
     pageSize: 1
 
-          
 ---
 spring: 
   profiles: prod

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import tacos.model.Ingredient;
 import tacos.model.Ingredient.Type;
 import tacos.model.Taco;
+
 import tacos.repository.IngredientRepository;
 import tacos.repository.TacoRepository;
 
@@ -20,6 +21,7 @@ public class DevelopmentConfig {
 
 	@Bean
 	public CommandLineRunner CommandLineRunner(IngredientRepository repo, TacoRepository tacoRepo) {
+
 		return new CommandLineRunner() {
 
 			@Override

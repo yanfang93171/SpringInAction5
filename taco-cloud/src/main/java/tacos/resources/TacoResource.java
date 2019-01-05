@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
-
 import lombok.Getter;
 import tacos.model.Taco;
 
@@ -24,6 +23,8 @@ public class TacoResource extends ResourceSupport {
 	public TacoResource(Taco taco) {
 		this.name = taco.getName();
 		this.createdAt = taco.getCreatedAt();
+
 		this.ingredients = ingredientAssember.toResources(taco.getIngredients());
+
 	}
 }

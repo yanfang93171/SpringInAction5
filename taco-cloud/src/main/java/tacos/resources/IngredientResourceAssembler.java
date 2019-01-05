@@ -9,7 +9,7 @@ public class IngredientResourceAssembler extends ResourceAssemblerSupport<Ingred
 
 	public IngredientResourceAssembler() {
 		super(IngredientController.class, IngredientResource.class);
-		// TODO Auto-generated constructor stub
+
 	}
 
 	@Override
@@ -20,6 +20,7 @@ public class IngredientResourceAssembler extends ResourceAssemblerSupport<Ingred
 	@Override
 	public IngredientResource toResource(Ingredient ingredient) {
 		return this.createResourceWithId(ingredient.getId(), ingredient);
+
 	}
 
 }
