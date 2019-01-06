@@ -1,0 +1,23 @@
+server:
+  port: 0 #0-app staring on a random port number 
+
+
+spring: 
+  application: 
+    name: ingredient-service
+
+eureka:
+  client:
+    service-url: 
+      defaultZone: http://localhost:8761/eureka/
+      
+
+---
+spring:
+  profiles: prod
+    
+#For production it's better
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka1.tacocloud.com:8761/eureka/, http://eureka2.tacocloud.com:8762/eureka
