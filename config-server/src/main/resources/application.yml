@@ -12,6 +12,8 @@ spring:
           #default-label: override default label or branch 
           #username:
           #password:
+#        encrypt: #config server still serve encrpted 
+#          enabled: false
 
           
           
