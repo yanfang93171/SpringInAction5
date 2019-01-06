@@ -6,11 +6,15 @@ spring:
   application: 
     name: ingredient-service
 
-eureka:
-  client:
-    service-url: 
-      defaultZone: http://localhost:8761/eureka/
-      
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+
+#Using config server
+  cloud:
+    config:
+      uri: http://localhost:8888
 
 ---
 spring:

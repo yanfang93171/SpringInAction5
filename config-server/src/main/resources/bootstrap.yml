@@ -1,0 +1,6 @@
+encrypt:
+  key-store:
+    alias: tacokey
+    location: classpath:/keystore.jks
+    password: l3tm31n
+    secret: s3cr3t
