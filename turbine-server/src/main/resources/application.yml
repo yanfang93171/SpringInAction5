@@ -1,0 +1,6 @@
+server: 
+  port: 8989
+#default not aggregate the streams of all services registered in Eureka
+turbine:
+  app-config: ingredient-service, ingredient-client
+  cluster-name-expression: "'default'"
