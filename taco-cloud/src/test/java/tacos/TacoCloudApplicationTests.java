@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TacoCloudChapter1ApplicationTests {
+public class TacoCloudApplicationTests {
 
 	@Test
 	public void contextLoads() {
